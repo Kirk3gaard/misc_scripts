@@ -151,6 +151,28 @@ prokka best_spades_graph.fasta --outdir spades_anno
 # Reference
 prokka EcoliK12MG1655_reference.fasta --outdir reference_anno
 
+### Convert gff to table
+# Spades
+perl gff.prokka.to.table.pl -i spades_anno/PROKKA_10172017.gff -o tables/spades_annotation.txt
+# Miniasm
+perl gff.prokka.to.table.pl -i miniasm_anno/PROKKA_10132017.gff -o tables/miniasm_annotation.txt
+# Racon1x
+perl gff.prokka.to.table.pl -i racon1x_anno/PROKKA_10172017.gff -o tables/racon1x_annotation.txt
+# Racon2x
+perl gff.prokka.to.table.pl -i racon2x_anno/PROKKA_10132017.gff -o tables/racon2x_annotation.txt
+# Racon2x+pilon
+perl gff.prokka.to.table.pl -i pilon_anno/PROKKA_10132017.gff -o tables/racon2xpilon_annotation.txt
+# CANU
+perl gff.prokka.to.table.pl -i CANU_anno/PROKKA_10152017.gff -o tables/canu_annotation.txt
+# CANU+nanopolish
+perl gff.prokka.to.table.pl -i CANU_Nanopolish_anno/PROKKA_10162017.gff -o tables/canunanopolish_annotation.txt
+# CANU+nanopolish+pilon
+perl gff.prokka.to.table.pl -i CANU_Nanopolish_pilon_anno/PROKKA_10172017.gff -o tables/canunanopolishpilon_annotation.txt
+# UNIcycler
+perl gff.prokka.to.table.pl -i unicycler_anno/PROKKA_10132017.gff -o tables/unicycler_annotation.txt
+# Reference
+perl gff.prokka.to.table.pl -i reference_anno/PROKKA_10132017.gff -o tables/reference_annotation.txt
+
 ##############
 # Run Checkm # (CheckM v1.0.7)
 ##############
