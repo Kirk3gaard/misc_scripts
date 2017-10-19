@@ -21,23 +21,32 @@ ILLUMINA=/space/users/rkirke08/Desktop/pikachutest/basecalling/EColiK12MG1655/PE
 # Settings
 THREADS=24;
 
+# PATHS
+MINIMAPPATH=/space/users/rkirke08/Desktop/Miniasm/minimap/;
+MINIMAP2PATH=/space/users/rkirke08/Desktop/software/minimap2/;
+MINIASMPATH=/space/users/rkirke08/Desktop/Miniasm/miniasm/;
+RACONPATH=/space/users/rkirke08/Desktop/software/racon/racon/racon/bin/;
+UNICYCLERPATH=/space/users/rkirke08/Desktop/software/Unicycler/;
+CANUPATH=/opt/canu-1.6/Linux-amd64/bin/;
+NANOPOLISHPATH=/opt/nanopolish/;
+
 ###########################################
 # Assembly + polishing with various tools #
 ###########################################
 
 # Miniasm assembly (v. 0.2-r137-dirty)
-/space/users/rkirke08/Desktop/Miniasm/minimap/minimap -Sw5 -L100 -m0 -t $THREADS $NANOPORE $NANOPORE | gzip -1 > reads.paf.gz
-/space/users/rkirke08/Desktop/Miniasm/miniasm/miniasm -f $NANOPORE reads.paf.gz > miniasm_assembly.gfa
+$MINIMAPPATH/minimap -Sw5 -L100 -m0 -t $THREADS $NANOPORE $NANOPORE | gzip -1 > reads.paf.gz
+$MINIASMPATH/miniasm -f $NANOPORE reads.paf.gz > miniasm_assembly.gfa
 awk '/^S/{print ">"$2"\n"$3}' miniasm_assembly.gfa > miniasm_assembly.fa
 
 # Racon correction (v. )
 ### Assembly consensus correction
-/space/users/rkirke08/Desktop/software/minimap2/minimap2 -t $THREADS -x map-ont miniasm_assembly.fa $NANOPORE > mappings1.paf  
-/space/users/rkirke08/Desktop/software/racon/racon/racon/bin/racon -t $THREADS $NANOPORE mappings1.paf miniasm_assembly.fa consensus1.fasta  
+$MINIMAP2PATH/minimap2 -t $THREADS -x map-ont miniasm_assembly.fa $NANOPORE > mappings1.paf  
+$RACONPATH/racon -t $THREADS $NANOPORE mappings1.paf miniasm_assembly.fa consensus1.fasta  
 
 ## Multiple rounds of correction gives better accuracy ##
-/space/users/rkirke08/Desktop/software/minimap2/minimap2 -t $THREADS -x map-ont consensus1.fasta $NANOPORE > mappings2.paf   
-/space/users/rkirke08/Desktop/software/racon/racon/racon/bin/racon -t $THREADS $NANOPORE mappings2.paf consensus1.fasta consensus2.fasta 
+$MINIMAP2PATH/minimap2 -t $THREADS -x map-ont consensus1.fasta $NANOPORE > mappings2.paf   
+RACONPATH/racon -t $THREADS $NANOPORE mappings2.paf consensus1.fasta consensus2.fasta 
 awk '/^>/{print ">" ++i; next}{print}'  consensus2.fasta > racon2x_miniasm_assembly.fasta
 
 # Pilon polish Racon2x corrected assembly (https://github.com/broadinstitute/pilon/releases/)
@@ -54,23 +63,23 @@ java -jar pilon.jar --genome racon2x_miniasm_assembly.fasta --unpaired sorted.ba
 
 
 # Unicycler assembly (v. 0.4.1)
-/space/users/rkirke08/Desktop/software/Unicycler/unicycler-runner.py -s $ILLUMINA -l $NANOPORE --threads $THREADS --spades_path /space/users/rkirke08/Desktop/spades/SPAdes-3.10.1-Linux/bin/spades.py --no_correct --no_pilon --racon_path /space/users/rkirke08/Desktop/software/racon/racon/racon/bin/racon -o unicycler_dir
+$UNICYCLERPATH/unicycler-runner.py -s $ILLUMINA -l $NANOPORE --threads $THREADS --spades_path /space/users/rkirke08/Desktop/spades/SPAdes-3.10.1-Linux/bin/spades.py --no_correct --no_pilon --racon_path /space/users/rkirke08/Desktop/software/racon/racon/racon/bin/racon -o unicycler_dir
 
 
 # CANU assembly (v. 1.6)
-/opt/canu-1.6/Linux-amd64/bin/canu -p ecoliK12MG1655 -d CANU-K12MG1655 genomeSize=4.8m -nanopore-raw $NANOPORE
+$CANUPATH/canu -p ecoliK12MG1655 -d CANU-K12MG1655 genomeSize=4.8m -nanopore-raw $NANOPORE
 
 # CANU+Nanopolish (v. 0.8.3)
-/opt/nanopolish/nanopolish index -d /space/users/rkirke08/Desktop/rkirkegaard/MinION/datadump/20170405_RHK_MinIONrun27_EcoliK12MG1655_rad002/ $NANOPOREFA
+$NANOPOLISHPATH/nanopolish index -d /space/users/rkirke08/Desktop/rkirkegaard/MinION/datadump/20170405_RHK_MinIONrun27_EcoliK12MG1655_rad002/ $NANOPOREFA
 # Index the draft genome
 bwa index $ASSEMBLY
 # Align the basecalled reads to the draft sequence
 bwa mem -x ont2d -t $THREADS $ASSEMBLY $NANOPOREFA | samtools sort -o reads.sorted.bam -T reads.tmp -
 samtools index reads.sorted.bam
 # -P and -t needs to be adjusted so that P*t does not exceed the number of available threads
-python /opt/nanopolish/scripts/nanopolish_makerange.py $ASSEMBLY | parallel --results nanopolish.results -P 6 \
-    /opt/nanopolish/nanopolish variants --consensus polished.{1}.fa -w {1} -r $NANOPOREFA -b reads.sorted.bam -g $ASSEMBLY --threads 4 --min-candidate-frequency 0.1
-python /opt/nanopolish/scripts/nanopolish_merge.py polished.*.fa > polished_genome.fa
+python $NANOPOLISHPATH/scripts/nanopolish_makerange.py $ASSEMBLY | parallel --results nanopolish.results -P 6 \
+    $NANOPOLISHPATH/nanopolish variants --consensus polished.{1}.fa -w {1} -r $NANOPOREFA -b reads.sorted.bam -g $ASSEMBLY --threads 4 --min-candidate-frequency 0.1
+python $NANOPOLISHPATH/scripts/nanopolish_merge.py polished.*.fa > polished_genome.fa
 
 
 
