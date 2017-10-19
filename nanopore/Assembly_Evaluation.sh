@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Genome assembly evaluation with E. Coli K12 MG1655 (Ref 4639675 bp)
+# Genome assembly evaluation with E. Coli K12 MG1655 (Ref U00096.2, 4639675 bp)
 # We have illumina data from SRA (SRR2627175, PE 270 Mbp)
 # and 1D R9.4 nanopore data (183 Mbp)
 # Miniasm assembly 
