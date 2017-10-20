@@ -177,3 +177,18 @@ perl gff.prokka.to.table.pl -i reference_anno/PROKKA_10132017.gff -o tables/refe
 # Run Checkm # (CheckM v1.0.7)
 ##############
 checkm lineage_wf ./bins ./output --threads $THREADS --extension fasta --file checkm_report.txt
+
+
+#############################################################
+# Map nanopore reads to assembly and generate coverage file #
+#############################################################
+echo "Map reads"
+$MINIKMAP2PATH/minimap2 -ax map-ont -t 20 assembly.fasta reads.fasta > temp/minimap_test.sam
+
+echo "Generate coverage data"
+# (MA solution from multi metagenome https://github.com/MadsAlbertsen/multi-metagenome/blob/master/misc.scripts/calc.coverage.in.bam.depth.pl)
+samtools view -@ $THREADS -Sb  temp/minimap_test.sam  >  temp/minimap_test.bam
+samtools sort -@ $THREADS temp/minimap_test.bam -o temp/minimap_test.sorted.bam
+samtools depth temp/minimap_test.sorted.bam > temp/minimap_test.depth.txt
+perl calc.coverage.in.bam.depth.pl -i temp/minimap_test.depth.txt -o ONT_minimap_coverage.csv
+#
