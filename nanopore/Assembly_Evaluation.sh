@@ -124,6 +124,8 @@ perl ANI.pl -bl /space/sharedbin/blast-2.2.25/bin/blastall -fd /space/sharedbin/
 perl ANI.pl -bl /space/sharedbin/blast-2.2.25/bin/blastall -fd /space/sharedbin/blast-2.2.25/bin/formatdb -qr pilon_polished_CANU_nanopolished.fasta -sb EcoliK12MG1655_reference.fasta -od ANI/result_canu_nanopolish_pilon
 # spades
 perl ANI.pl -bl /space/sharedbin/blast-2.2.25/bin/blastall -fd /space/sharedbin/blast-2.2.25/bin/formatdb -qr best_spades_graph.fasta -sb EcoliK12MG1655_reference.fasta -od ANI/result_spades
+# Spades hybrid
+/space/users/rkirke08/Desktop/spades/SPAdes-3.10.1-Linux/bin/spades.py --only-assembler -t $THREADS -k 33,55,77 -s $ILLUMINA --nanopore $NANOPORE -o SPAdes_hybrid &
 # Reference
 perl ANI.pl -bl /space/sharedbin/blast-2.2.25/bin/blastall -fd /space/sharedbin/blast-2.2.25/bin/formatdb -qr EcoliK12MG1655_reference.fasta -sb EcoliK12MG1655_reference.fasta -od ANI/result_reference
 
@@ -177,6 +179,33 @@ perl gff.prokka.to.table.pl -i reference_anno/PROKKA_10132017.gff -o tables/refe
 # Run Checkm # (CheckM v1.0.7)
 ##############
 checkm lineage_wf ./bins ./output --threads $THREADS --extension fasta --file checkm_report.txt
+
+#############
+# Run QUAST #
+#############
+# Miniasm
+quast --threads $THREADS --output-dir  quast/miniasm --no-plots -R EcoliK12MG1655_reference.fasta miniasm_assembly.fa
+# spades
+quast --threads $THREADS --output-dir  quast/spades --no-plots -R EcoliK12MG1655_reference.fasta best_spades_graph.fasta
+# spadeshybrid
+quast --threads $THREADS --output-dir  quast/spadeshybrid --no-plots -R EcoliK12MG1655_reference.fasta spades_hybrid.fasta
+# racon1x
+quast --threads $THREADS --output-dir  quast/racon1x --no-plots -R EcoliK12MG1655_reference.fasta consensus1.fasta
+# racon2x
+quast --threads $THREADS --output-dir  quast/racon2x --no-plots -R EcoliK12MG1655_reference.fasta consensus2.fasta
+# racon2x+pilon
+quast --threads $THREADS --output-dir  quast/racon2xpilon --no-plots -R EcoliK12MG1655_reference.fasta pilon_polished.fasta
+# CANU
+quast --threads $THREADS --output-dir  quast/canu --no-plots -R EcoliK12MG1655_reference.fasta CANU_ecoliK12MG1655.contigs.fasta
+# CANU+nanopolish
+quast --threads $THREADS --output-dir  quast/canunanopolish --no-plots -R EcoliK12MG1655_reference.fasta CANU_nanopolished_genome.fa
+# CANU+nanopolish+pilon
+quast --threads $THREADS --output-dir  quast/cnunanopolishpilon --no-plots -R EcoliK12MG1655_reference.fasta pilon_polished_CANU_nanopolished.fasta
+# unicycler
+quast --threads $THREADS --output-dir  quast/unicycler -R EcoliK12MG1655_reference.fasta unicycler_assembly.fasta
+# reference
+quast --threads $THREADS --output-dir  quast/reference --no-plots -R EcoliK12MG1655_reference.fasta EcoliK12MG1655_reference.fasta
+#
 
 
 #############################################################
