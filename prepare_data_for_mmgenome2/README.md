@@ -3,7 +3,7 @@ Following the release of our [mmgenome2 package](https://github.com/KasperSkytte
 This repository contains code that will:
   
 * generate an assembly from illumina data using the megahit assembler, 
-* map reads to it using [minimap2](https://github.com/lh3/minimap2) to generate coverage, 
+* map reads to the assembly using [minimap2](https://github.com/lh3/minimap2) to generate coverage, 
 * predict open reading frames using [prodigal](https://github.com/hyattpd/Prodigal), 
 * find essential genes using [hmmer](http://hmmer.org/), 
 * classify contigs taxonomically using [kaiju](https://github.com/bioinformatics-centre/kaiju).
