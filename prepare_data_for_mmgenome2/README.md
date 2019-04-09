@@ -2,7 +2,7 @@
 Following the release of our [mmgenome2 package](https://github.com/KasperSkytte/mmgenome2) it has been clear that it can be tricky to generate some of the files needed for the binning process. 
 This repository contains code that will:
   
-* generate an assembly from illumina data using the megahit assembler, 
+* generate an assembly from illumina data using the [megahit](https://github.com/voutcn/megahit) assembler, 
 * map reads to the assembly using [minimap2](https://github.com/lh3/minimap2) to generate coverage, 
 * predict open reading frames using [prodigal](https://github.com/hyattpd/Prodigal), 
 * find essential genes using [hmmer](http://hmmer.org/), 
