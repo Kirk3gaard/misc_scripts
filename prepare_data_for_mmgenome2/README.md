@@ -1,5 +1,5 @@
 # How to generate input files for mmgenome2?
-Following the release of our []mmgenome2 package](https://github.com/KasperSkytte/mmgenome2) it has been clear that it can be tricky to generate some of the files needed for the binning process. 
+Following the release of our [mmgenome2 package](https://github.com/KasperSkytte/mmgenome2) it has been clear that it can be tricky to generate some of the files needed for the binning process. 
 This repository contains code that will generate an assembly from illumina data using the megahit assembler, map reads to it using minimap2 to generate coverage, predict open reading frames using prodigal, find essential genes using hmmer, classify contigs taxonomically using kaiju and thus generate the files needed to use mmgenome2.
 It is only meant as an example of how the files can be generated and it is important to highlight that it can be modified in many ways. 
 The assembler can be exchanged with your preferred solution (spades, wtdbg, miniasm, canu, masurca), the kind of reads mapped to generate coverage can be any type you have (illumina, pacbio, nanopore etc.). 
