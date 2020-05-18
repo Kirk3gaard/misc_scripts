@@ -21,7 +21,7 @@ INPUTASSEMBLY="/shared-nfs/RHK/Projects/2020_mmlong/hicanu/results/assembly.fast
 ILMDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/trimmed_data/;
 PBDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/
 NPDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/
-THREADS=50;
+THREADS=100;
 TMPDIR=/scratch/tmp_users/RHK
 
 # Modules
@@ -127,9 +127,9 @@ module purge
 fi
 if [ -s $OUTPUTFILE ]; then echo "Successfully generated $OUTPUTFILE" >> log.txt; else echo "Failed generating $OUTPUTFILE" >> log.txt; exit; fi
 
-###############################
-# Classify genomes using GTDB #
-###############################
+###################################
+# Classify genome bins using GTDB #
+###################################
 date >> log.txt
 echo "Classify dereplicated bins using GTDB" >> log.txt
 if [ "$(ls -A temp/gtdb/)" ]; then echo "gtdb has already been generated" >> log.txt;  
