@@ -142,7 +142,7 @@ R --slave --silent --args "$OUTPUTFILE" << 'makeCOMBINEDtable'
 
 	# Export combined table
   fwrite(x = d_combined,
-    file = args[[1]]),
+    file = args[[1]],
     sep ="\t",
     na = "NA",
     ol.names = TRUE,
