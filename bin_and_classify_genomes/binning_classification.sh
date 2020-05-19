@@ -145,7 +145,7 @@ R --slave --silent --args "$OUTPUTFILE" << 'makeCOMBINEDtable'
     file = args[[1]],
     sep ="\t",
     na = "NA",
-    ol.names = TRUE,
+    col.names = TRUE,
     quote = FALSE)
 makeCOMBINEDtable
 
