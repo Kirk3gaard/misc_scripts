@@ -17,7 +17,7 @@ exec 1>log.out 2>&1
 # a directory with trimmed illumina reads for binning
 
 # Settings
-INPUTASSEMBLY="/shared-nfs/RHK/Projects/2020_mmlong/hicanu/results/assembly.fasta"
+INPUTASSEMBLY="/shared-nfs/RHK/Projects/2020_mmlong/canu2/pacbioccs/results/assembly.fasta"
 ILMDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/trimmed_data/;
 PBDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/
 NPDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/
@@ -60,7 +60,7 @@ module load $MODULE_SAMTOOLS
 while read PBsamples
 do
 PBSAMPLE=$PBsamples
-OUTPUTFILE=temp/mapping/$PBSAMPLE.cov.bam
+OUTPUTFILE=temp/mapping/$PBSAMPLE.pbccs.cov.bam
 if [ -s $OUTPUTFILE ]; then echo "$OUTPUTFILE has already been generated"; 
 else
 minimap2 -ax asm20 --secondary=no -t $THREADS $REF $PBDIR/$PBSAMPLE.fastq |\
@@ -81,7 +81,7 @@ module load $MODULE_SAMTOOLS
 while read NPsamples
 do
 NPSAMPLE=$NPsamples
-OUTPUTFILE=temp/mapping/$NPSAMPLE.cov.bam
+OUTPUTFILE=temp/mapping/$NPSAMPLE.np.cov.bam
 if [ -s $OUTPUTFILE ]; then echo "$OUTPUTFILE has already been generated"; 
 else
 minimap2 -ax map-ont --secondary=no -t $THREADS $REF $NPDIR/$NPSAMPLE.fastq |\
@@ -102,7 +102,7 @@ module load $MODULE_SAMTOOLS
 while read ILMsamples
 do
 ILMSAMPLE=$ILMsamples
-OUTPUTFILE=temp/mapping/$ILMSAMPLE.cov.bam
+OUTPUTFILE=temp/mapping/$ILMSAMPLE.ilm.cov.bam
 if [ -s $OUTPUTFILE ]; then echo "$OUTPUTFILE has already been generated";  
 else
 minimap2 -ax sr -t $THREADS $REF $ILMDIR/$ILMSAMPLE"_ilmtrim.fq" |\
@@ -121,7 +121,9 @@ if [ -s $OUTPUTFILE ]; then echo "$OUTPUTFILE has already been generated";
 else
 mkdir -p temp/metabat2/bins/
 module load $MODULE_METABAT
-jgi_summarize_bam_contig_depths --percentIdentity 90 --outputDepth results/readcov.txt temp/mapping/*cov.bam
+jgi_summarize_bam_contig_depths --percentIdentity 97 --outputDepth temp/readcov.ilm.txt temp/mapping/*.ilm.cov.bam
+jgi_summarize_bam_contig_depths --percentIdentity 85 --outputDepth temp/readcov.np.txt temp/mapping/*.np.cov.bam
+jgi_summarize_bam_contig_depths --percentIdentity 97 --outputDepth temp/readcov.pbccs.txt temp/mapping/*.pbccs.cov.bam
 metabat2 -i $REF -a $OUTPUTFILE -t $THREADS -o temp/metabat2/bins/
 module purge
 fi
