@@ -35,6 +35,7 @@ MODULE_GTDB=GTDBTk/1.0.2-foss-2018a-Python-3.6.4;
 MODULE_KAIJU=Kaiju/1.7.0-foss-2018a
 MODULE_HMM=HMMER/3.2.1-foss-2018a
 MODULE_JAVA=Java/13.0.1
+MODULE_R=R/3.5.0-foss-2018a-X11-20180131
 ESSENTIAL=/space/users/smk/Desktop/2017_long_read/pipeline/mmlong/mmlong_tools/databases/essential.hmm;
 KAIJU_DB=/shared-nfs/RHK/databases/kaiju/
 
@@ -121,9 +122,33 @@ if [ -s $OUTPUTFILE ]; then echo "$OUTPUTFILE has already been generated";
 else
 mkdir -p temp/metabat2/bins/
 module load $MODULE_METABAT
-jgi_summarize_bam_contig_depths --percentIdentity 97 --outputDepth temp/readcov.ilm.txt temp/mapping/*.ilm.cov.bam
-jgi_summarize_bam_contig_depths --percentIdentity 85 --outputDepth temp/readcov.np.txt temp/mapping/*.np.cov.bam
-jgi_summarize_bam_contig_depths --percentIdentity 97 --outputDepth temp/readcov.pbccs.txt temp/mapping/*.pbccs.cov.bam
+module load $MODULE_R
+jgi_summarize_bam_contig_depths --percentIdentity 97 --outputDepth temp/readcov.ilm.tsv temp/mapping/*.ilm.cov.bam
+jgi_summarize_bam_contig_depths --percentIdentity 85 --outputDepth temp/readcov.np.tsv temp/mapping/*.np.cov.bam
+jgi_summarize_bam_contig_depths --percentIdentity 97 --outputDepth temp/readcov.pbccs.tsv temp/mapping/*.pbccs.cov.bam
+R --slave --silent --args "$OUTPUTFILE" << 'makeCOMBINEDtable'
+  # Extract passed args from shell script
+	args <- commandArgs(trailingOnly = TRUE)
+	# Load dependencies
+	library(dplyr)
+  library(data.table)
+  library(tidyr)
+	# Read coverage files
+  pb<-read.delim(file = temp/readcov.pbccs.tsv,sep = "\t")
+  ilm<-read.delim(file = temp/readcov.ilm.tsv,sep = "\t") %>% select(-c(contigLen,totalAvgDepth))
+  np<-read.delim(file = temp/readcov.np.tsv,sep = "\t") %>% select(-c(contigLen,totalAvgDepth))
+  
+  d_combined<-full_join(pb,ilm) %>% full_join(np)
+
+	# Export combined table
+  fwrite(x = d_combined,
+    file = args[[1]]),
+    sep ="\t",
+    na = "NA",
+    ol.names = TRUE,
+    quote = FALSE)
+makeCOMBINEDtable
+
 metabat2 -i $REF -a $OUTPUTFILE -t $THREADS -o temp/metabat2/bins/
 module purge
 fi
