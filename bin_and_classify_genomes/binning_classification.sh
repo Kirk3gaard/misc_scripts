@@ -117,7 +117,7 @@ if [ -s $OUTPUTFILE ]; then echo "Successfully generated $OUTPUTFILE" >> log.txt
 ##############################
 # Bin genomes using metabat2 #
 ##############################
-OUTPUTFILE=results/readcov.txt;
+OUTPUTFILE=results/readcov.tsv;
 if [ -s $OUTPUTFILE ]; then echo "$OUTPUTFILE has already been generated"; 
 else
 mkdir -p temp/metabat2/bins/
