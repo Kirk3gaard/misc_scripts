@@ -134,9 +134,9 @@ R --slave --silent --args "$OUTPUTFILE" << 'makeCOMBINEDtable'
   library(data.table)
   library(tidyr)
 	# Read coverage files
-  pb<-read.delim(file = temp/readcov.pbccs.tsv,sep = "\t")
-  ilm<-read.delim(file = temp/readcov.ilm.tsv,sep = "\t") %>% select(-c(contigLen,totalAvgDepth))
-  np<-read.delim(file = temp/readcov.np.tsv,sep = "\t") %>% select(-c(contigLen,totalAvgDepth))
+  pb<-read.delim(file = "temp/readcov.pbccs.tsv",sep = "\t")
+  ilm<-read.delim(file = "temp/readcov.ilm.tsv",sep = "\t") %>% select(-c(contigLen,totalAvgDepth))
+  np<-read.delim(file = "temp/readcov.np.tsv",sep = "\t") %>% select(-c(contigLen,totalAvgDepth))
   
   d_combined<-full_join(pb,ilm) %>% full_join(np)
 
