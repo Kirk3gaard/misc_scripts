@@ -121,7 +121,7 @@ if [ -s $OUTPUTFILE ]; then echo "$OUTPUTFILE has already been generated";
 else
 mkdir -p temp/metabat2/bins/
 module load $MODULE_METABAT
-jgi_summarize_bam_contig_depths --outputDepth results/readcov.txt temp/mapping/*cov.bam
+jgi_summarize_bam_contig_depths --percentIdentity 90 --outputDepth results/readcov.txt temp/mapping/*cov.bam
 metabat2 -i $REF -a $OUTPUTFILE -t $THREADS -o temp/metabat2/bins/
 module purge
 fi
