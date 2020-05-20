@@ -17,7 +17,7 @@ exec 1>log.out 2>&1
 # a directory with trimmed illumina reads for binning
 
 # Settings
-INPUTASSEMBLY="/shared-nfs/RHK/Projects/2020_mmlong/canu2/pacbioccs/results/assembly.fasta"
+INPUTASSEMBLY="/shared-nfs/RHK/Projects/2020_mmlong/canu2/pacbioccs/results/assembly_clean.fasta"
 ILMDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/trimmed_data/;
 PBDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/
 NPDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/
@@ -218,7 +218,7 @@ date >> log.txt
 echo "Taxonomic classification of contigs using Kaiju" >> log.txt
 kaiju -p -z $THREADS -t $KAIJU_DB/nodes.dmp -f $KAIJU_DB/kaiju_db_refseq.fmi \
 -i temp/prokka/orfs.faa -o temp/kaiju.out
-addTaxonNames -u -r phylum -t $KAIJU_DB/nodes.dmp -n $KAIJU_DB/names.dmp \
+kaiju-addTaxonNames -u -r phylum -t $KAIJU_DB/nodes.dmp -n $KAIJU_DB/names.dmp \
 -i temp/kaiju.out -o temp/kaiju.names.out
 
 # Majority vote contig classification
