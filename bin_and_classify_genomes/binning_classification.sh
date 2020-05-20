@@ -151,6 +151,7 @@ R --slave --silent --args "$OUTPUTFILE" << 'makeCOMBINEDtable'
 makeCOMBINEDtable
 
 metabat2 -i $REF -a $OUTPUTFILE -t $THREADS -o temp/metabat2/bins/bin
+grep -r ">" temp/metabat2/bins/ | sed 's/.*bins\///' | sed 's/:>/\t/' > results/bin_contig_list.tsv
 module purge
 fi
 if [ -s $OUTPUTFILE ]; then echo "Successfully generated $OUTPUTFILE" >> log.txt; else echo "Failed generating $OUTPUTFILE" >> log.txt; exit; fi
