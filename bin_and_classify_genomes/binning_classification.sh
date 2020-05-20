@@ -150,7 +150,7 @@ R --slave --silent --args "$OUTPUTFILE" << 'makeCOMBINEDtable'
     quote = FALSE)
 makeCOMBINEDtable
 
-metabat2 -i $REF -a $OUTPUTFILE -t $THREADS -o temp/metabat2/bins/
+metabat2 -i $REF -a $OUTPUTFILE -t $THREADS -o temp/metabat2/bins/bin
 module purge
 fi
 if [ -s $OUTPUTFILE ]; then echo "Successfully generated $OUTPUTFILE" >> log.txt; else echo "Failed generating $OUTPUTFILE" >> log.txt; exit; fi
