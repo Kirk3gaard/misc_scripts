@@ -217,7 +217,7 @@ cut -f1,4 -d " " | sed -e 's/_/ /' -e '/^#/ d' | tr " " "," | cut -f1,3 -d"," \
 date >> log.txt
 echo "Taxonomic classification of contigs using Kaiju" >> log.txt
 kaiju -p -z $THREADS -t $KAIJU_DB/nodes.dmp -f $KAIJU_DB/kaiju_db_refseq.fmi \
--i temp/orfs.faa -o temp/kaiju.out
+-i temp/prokka/orfs.faa -o temp/kaiju.out
 addTaxonNames -u -r phylum -t $KAIJU_DB/nodes.dmp -n $KAIJU_DB/names.dmp \
 -i temp/kaiju.out -o temp/kaiju.names.out
 
