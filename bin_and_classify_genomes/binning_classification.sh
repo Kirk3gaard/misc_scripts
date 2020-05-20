@@ -37,7 +37,7 @@ MODULE_HMM=HMMER/3.2.1-foss-2018a
 MODULE_JAVA=Java/13.0.1
 MODULE_R=R/3.5.0-foss-2018a-X11-20180131
 MODULE_BARRNAP=Barrnap/0.9-foss-2018a
-ESSENTIAL=/srv/MA/old_space/malber06/2017_long_read/pipeline/mmlong/mmlong_tools/databases/essential.hmm;
+ESSENTIAL=/shared-nfs/RHK/databases/essential/essential.hmm;
 KAIJU_DB=/shared-nfs/RHK/databases/kaiju/
 
 # Environment
