@@ -254,6 +254,38 @@ fi
 if [ -s $OUTPUTFILE ]; then echo "Successfully generated $OUTPUTFILE" >> log.txt; else echo "Failed generating $OUTPUTFILE" >> log.txt; exit; fi
 
 ####################
+# Count rRNA genes #
+####################
+OUTPUTFILE=results/rrna_stats.csv
+if [ -s $OUTPUTFILE ]; then echo "$OUTPUTFILE has already been generated";  
+else
+module load $MODULE_BARRNAP
+function rrna_stats {
+  # Input variables
+  FILE=$1
+
+  # Format file name
+  FILE_NAME=${FILE##*/}
+  FILE_NAME=${FILE_NAME%%.*}
+
+  # Calculate statistics
+  S=`barrnap --threads 5 --kingdom bac --quiet $FILE |\
+  awk -F "=" -v fn=$FILE_NAME '
+    NR == FNR {a[$1]=0; next}
+    /^[^#]/{gsub(/ .*/, "", $3); a[$3]++}
+    END{OFS = ","; print fn, a["16S"], a["23S"], a["5S"]}
+  ' <(printf "%s\n" 16S 23S 5S) -` 
+  echo "$S"
+}
+echo "bin, 16S, 23S, 5S" > ./temp/rrna_stats.csv
+find ./temp/metabat2/bins/ -name "*.fa" | while read file; do rrna_stats "$file" >> ./temp/rrna_stats.csv; done
+cp ./temp/rrna_stats.csv $OUTPUTFILE
+module purge
+fi
+if [ -s $OUTPUTFILE ]; then echo "Successfully generated $OUTPUTFILE" >> log.txt; else echo "Failed generating $OUTPUTFILE" >> log.txt; exit; fi
+
+
+####################
 # Count tRNA genes #
 ####################
 OUTPUTFILE=results/trna_stats.csv
