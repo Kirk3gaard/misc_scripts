@@ -267,13 +267,14 @@ function rrna_stats {
   # Format file name
   FILE_NAME=${FILE##*/}
   FILE_NAME=${FILE_NAME%%.*}
+  BIN=$(basename $FILE | sed 's/\.fa//')
 
   # Calculate statistics
   S=`barrnap --threads 5 --kingdom bac --quiet $FILE |\
-  awk -F "=" -v fn=$FILE_NAME '
+  awk -F "=" -v bin=$BIN '
     NR == FNR {a[$1]=0; next}
     /^[^#]/{gsub(/ .*/, "", $3); a[$3]++}
-    END{OFS = ","; print fn, a["16S"], a["23S"], a["5S"]}
+    END{OFS = ","; print bin, a["16S"], a["23S"], a["5S"]}
   ' <(printf "%s\n" 16S 23S 5S) -` 
   echo "$S"
 }
