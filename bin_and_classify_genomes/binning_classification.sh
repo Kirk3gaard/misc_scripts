@@ -297,7 +297,7 @@ mkdir -p temp/trna_scan
 find  ./temp/metabat2/bins/ -name '*.fa' |\
 parallel --progress -j $THREADS "tRNAscan-SE -G -o temp/trna_scan/tran_{/.}.txt -m temp/trna_scan/stats_{/.}.txt -d {}; sed -i -e '1,3'd -e 's/$/\t{/.}/g' temp/trna_scan/tran_{/.}.txt"
 echo "trna,bin" > temp/trna_stats.csv
-cat temp/trna_scan/tran_* | cut -f10,5 | sed 's/\t/,/g' >> temp/trna_stats.csv
+cat temp/trna_scan/tran_* | cut -f11,5 | sed 's/\t/,/g' >> temp/trna_stats.csv
 cp temp/trna_stats.csv results/trna_stats.csv
 module purge
 fi
