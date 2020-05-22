@@ -37,6 +37,8 @@ MODULE_HMM=HMMER/3.2.1-foss-2018a
 MODULE_JAVA=Java/13.0.1
 MODULE_R=R/3.5.0-foss-2018a-X11-20180131
 MODULE_BARRNAP=Barrnap/0.9-foss-2018a
+MODULE_TRNASCAN=tRNAscan-SE/2.0.5-foss-2018a
+MODULE_PARALLEL=parallel/20190122-foss-2018a
 ESSENTIAL=/shared-nfs/RHK/databases/essential/essential.hmm;
 KAIJU_DB=/shared-nfs/RHK/databases/kaiju/
 
@@ -247,6 +249,24 @@ date >> log.txt
 echo "Detect 16S rRNA genes with Barrnap" >> log.txt
 barrnap $REF --threads $THREADS --outseq temp/rRNA.fa
 grep -A1 ">16S" temp/rRNA.fa > $OUTPUTFILE
+module purge
+fi
+if [ -s $OUTPUTFILE ]; then echo "Successfully generated $OUTPUTFILE" >> log.txt; else echo "Failed generating $OUTPUTFILE" >> log.txt; exit; fi
+
+####################
+# Count tRNA genes #
+####################
+OUTPUTFILE=results/trna_stats.csv
+if [ -s $OUTPUTFILE ]; then echo "$OUTPUTFILE has already been generated";  
+else
+module load $MODULE_TRNASCAN
+module loade $MODULE_PARALLEL
+mkdir -p temp/trna_scan
+find  ./temp/metabat2/bins/ -name '*.fa' |\
+parallel --progress -j $THREADS "tRNAscan-SE -G -o temp/trna_scan/tran_{/.}.txt -m temp/trna_scan/stats_{/.}.txt -d {}; sed -i -e '1,3'd -e 's/$/\t{/.}/g' temp/trna_scan/tran_{/.}.txt"
+echo "trna,bin" > temp/trna_stats.csv
+cat temp/trna_scan/tran_* | cut -f10,5 | sed 's/\t/,/g' >> temp/trna_stats.csv
+cp temp/trna_stats.csv results/trna_stats.csv
 module purge
 fi
 if [ -s $OUTPUTFILE ]; then echo "Successfully generated $OUTPUTFILE" >> log.txt; else echo "Failed generating $OUTPUTFILE" >> log.txt; exit; fi
