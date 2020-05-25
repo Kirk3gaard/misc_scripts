@@ -207,7 +207,9 @@ module load $MODULE_KAIJU
 # Essential genes
 date >> log.txt
 echo "Detection of essential genes using HMM" >> log.txt
-cat temp/prokka/PROKKA*.faa > temp/prokka/orfs.faa
+# Rename fasta headers to include contig names
+grep "ID=" temp/prokka/PROKKA_*.gff | sed 's/;.*//'|  sed 's/ID=//' | cut -f 1,9 | sed 's/\t/_/' | sed -e 's/^/>/' > temp/headerFile.txt
+awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}' < temp/prokka/PROKKA_*.faa | tail -n +2 | awk 'NR%2==0' | paste -d'\n' temp/headerFile.txt - > temp/prokka/orfs.faa
 hmmsearch --tblout temp/hmm.orfs.txt --cut_tc --notextw \
 --cpu $THREADS $ESSENTIAL temp/prokka/orfs.faa > /dev/null
 echo "scaffold,hmm.id" > temp/essential.csv
