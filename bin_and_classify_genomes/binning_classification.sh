@@ -127,7 +127,7 @@ mkdir -p temp/metabat2/bins/
 module load $MODULE_METABAT
 module load $MODULE_R
 jgi_summarize_bam_contig_depths --percentIdentity 97 --outputDepth temp/readcov.ilm.tsv temp/mapping/*.ilm.cov.bam
-jgi_summarize_bam_contig_depths --percentIdentity 85 --outputDepth temp/readcov.np.tsv temp/mapping/*.np.cov.bam
+jgi_summarize_bam_contig_depths --percentIdentity 80 --outputDepth temp/readcov.np.tsv temp/mapping/*.np.cov.bam
 jgi_summarize_bam_contig_depths --percentIdentity 97 --outputDepth temp/readcov.pbccs.tsv temp/mapping/*.pbccs.cov.bam
 R --slave --silent --args "$OUTPUTFILE" << 'makeCOMBINEDtable'
   # Extract passed args from shell script
