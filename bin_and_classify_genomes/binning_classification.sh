@@ -17,7 +17,7 @@ exec 1>log.out 2>&1
 # a directory with trimmed illumina reads for binning
 
 # Settings
-INPUTASSEMBLY="/shared-nfs/RHK/Projects/2020_mmlong/canu2/pacbioccs/results/assembly_clean.fasta"
+INPUTASSEMBLY="/shared-nfs/RHK/Projects/2020_mmlong/Flye/2020-05-27-PBCCS/results/assembly_clean.fasta"
 ILMDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/trimmed_data/;
 PBDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/
 NPDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/
