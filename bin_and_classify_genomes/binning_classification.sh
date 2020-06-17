@@ -18,6 +18,7 @@ exec 1>log.out 2>&1
 
 # Settings
 INPUTASSEMBLY="/shared-nfs/RHK/Projects/2020_mmlong/Flye/2020-05-27-PBCCS/results/assembly_clean.fasta"
+ILMREADS_SNP=/shared-nfs/RHK/Projects/2020_mmlong/data/LIB-RHK-1851_ILM_trim.fq
 ILMDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/trimmed_data/;
 PBDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/
 NPDIR=/shared-nfs/RHK/Projects/2020_mmlong/data/
@@ -39,6 +40,9 @@ MODULE_R=R/3.5.0-foss-2018a-X11-20180131
 MODULE_BARRNAP=Barrnap/0.9-foss-2018a
 MODULE_TRNASCAN=tRNAscan-SE/2.0.5-foss-2018a
 MODULE_PARALLEL=parallel/20190122-foss-2018a
+MODULE_PYSAM=Pysam/0.14.1-foss-2018a-Python-2.7.14
+MODULE_BOWTIE2=Bowtie2/2.3.4.1-foss-2018a
+CMSEQPATH=/shared-nfs/RHK/software/cmseq/cmseq/cmseq/
 ESSENTIAL=/shared-nfs/RHK/databases/essential/essential.hmm;
 KAIJU_DB=/shared-nfs/RHK/databases/kaiju/
 
@@ -91,9 +95,9 @@ else
 minimap2 -ax map-ont --secondary=no -t $THREADS $REF $NPDIR/$NPSAMPLE.fastq |\
   samtools view --threads $THREADS -Sb -F 0x104 - |\
   samtools sort --threads $THREADS - > $OUTPUTFILE
-module purge
 fi
 done < NPsamples
+module purge
 if [ -s $OUTPUTFILE ]; then echo "Successfully generated $OUTPUTFILE" >> log.txt; else echo "Failed generating $OUTPUTFILE" >> log.txt; exit; fi
 
 ####################
@@ -295,7 +299,7 @@ OUTPUTFILE=results/trna_stats.csv
 if [ -s $OUTPUTFILE ]; then echo "$OUTPUTFILE has already been generated";  
 else
 module load $MODULE_TRNASCAN
-module loade $MODULE_PARALLEL
+module load $MODULE_PARALLEL
 mkdir -p temp/trna_scan
 find  ./temp/metabat2/bins/ -name '*.fa' |\
 parallel --progress -j $THREADS "tRNAscan-SE -G -o temp/trna_scan/tran_{/.}.txt -m temp/trna_scan/stats_{/.}.txt -d {}; sed -i -e '1,3'd -e 's/$/\t{/.}/g' temp/trna_scan/tran_{/.}.txt"
@@ -303,6 +307,31 @@ echo "trna,bin" > temp/trna_stats.csv
 cat temp/trna_scan/tran_* | cut -f11,5 | sed 's/\t/,/g' >> temp/trna_stats.csv
 cp temp/trna_stats.csv results/trna_stats.csv
 module purge
+fi
+if [ -s $OUTPUTFILE ]; then echo "Successfully generated $OUTPUTFILE" >> log.txt; else echo "Failed generating $OUTPUTFILE" >> log.txt; exit; fi
+
+#####################
+# Get SNP frequency #
+#####################
+OUTPUTFILE=results/cmseq_output.txt
+if [ -s $OUTPUTFILE ]; then echo "$OUTPUTFILE has already been generated";  
+else
+if [ -s $ILMREADS_SNP ]; 
+then
+module load $MODULE_BOWTIE2
+module load $MODULE_SAMTOOLS
+module load $MODULE_PYSAM
+bowtie2-build $REF BUILDbowtie2
+bowtie2 --threads $THREADS --very-sensitive-local -x BUILDbowtie2 -r $ILMREADS_SNP -S temp/bowtie_mapped.sam
+samtools view --threads $THREADS -u temp/bowtie_mapped.sam | samtools sort --threads $THREADS -o temp/bowtie_sorted.bam
+samtools index temp/bowtie_sorted.bam
+
+# Extract polymorphic rate from sorted bam file counting only bases with q30+ and position-coverage of 10
+python $CMSEQPATH/poly.py temp/bowtie_sorted.bam --mincov 10 --minqual 30 > results/cmseq_output.txt
+module purge
+else
+echo "no file called $ILMREADS_SNP";
+fi
 fi
 if [ -s $OUTPUTFILE ]; then echo "Successfully generated $OUTPUTFILE" >> log.txt; else echo "Failed generating $OUTPUTFILE" >> log.txt; exit; fi
 
