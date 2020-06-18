@@ -42,6 +42,8 @@ MODULE_TRNASCAN=tRNAscan-SE/2.0.5-foss-2018a
 MODULE_PARALLEL=parallel/20190122-foss-2018a
 MODULE_PYSAM=Pysam/0.14.1-foss-2018a-Python-2.7.14
 MODULE_BOWTIE2=Bowtie2/2.3.4.1-foss-2018a
+MODULE_PYTHON=Python/3.6.4-foss-2018a
+ENV_CMSEQ=/shared-nfs/RHK/software/cmseq/bin/activate
 CMSEQPATH=/shared-nfs/RHK/software/cmseq/cmseq/cmseq/
 ESSENTIAL=/shared-nfs/RHK/databases/essential/essential.hmm;
 KAIJU_DB=/shared-nfs/RHK/databases/kaiju/
@@ -327,7 +329,10 @@ samtools view --threads $THREADS -u temp/bowtie_mapped.sam | samtools sort --thr
 samtools index temp/bowtie_sorted.bam
 
 # Extract polymorphic rate from sorted bam file counting only bases with q30+ and position-coverage of 10
-python $CMSEQPATH/poly.py temp/bowtie_sorted.bam --mincov 10 --minqual 30 > results/cmseq_output.txt
+module load $MODULE_PYTHON # load python3
+. $ENV_CMSEQ
+poly.py temp/bowtie_sorted.bam --mincov 10 --minqual 30 > results/cmseq_output.txt
+deactivate
 module purge
 else
 echo "no file called $ILMREADS_SNP";
