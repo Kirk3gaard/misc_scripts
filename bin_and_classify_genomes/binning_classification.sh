@@ -327,6 +327,7 @@ bowtie2-build $REF BUILDbowtie2
 bowtie2 --threads $THREADS --very-sensitive-local -x BUILDbowtie2 -r $ILMREADS_SNP -S temp/bowtie_mapped.sam
 samtools view --threads $THREADS -u temp/bowtie_mapped.sam | samtools sort --threads $THREADS -o temp/bowtie_sorted.bam
 samtools index temp/bowtie_sorted.bam
+module purge
 
 # Extract polymorphic rate from sorted bam file counting only bases with q30+ and position-coverage of 10
 module load $MODULE_PYTHON # load python3
