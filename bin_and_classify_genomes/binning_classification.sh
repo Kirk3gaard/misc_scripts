@@ -175,7 +175,7 @@ module load $MODULE_GTDB
 mkdir -p /scratch/tmp_users/RHK
 export TMPDIR=/scratch/tmp_users/RHK
 gtdbtk classify_wf --cpus 20 --genome_dir temp/metabat2/bins/ --out_dir temp/gtdb --extension .fa
-cp temp/gtdb/classify/*.summary.tsv results/
+cat temp/gtdb/classify/*.summary.tsv | sed '1!{/^user/d;}' > results/gtdb.summary.tsv
 module purge
 fi
 
